@@ -1,0 +1,52 @@
+title: League Level0 Python
+description: description  # Assuming 'description' is a variable defined elsewhere
+
+head:
+  - - meta
+    - name: theme-color
+      content: '#F37121'
+  - - meta
+    - name: apple-mobile-web-app-capable
+      content: yes
+  - - meta
+    - name: apple-mobile-web-app-status-bar-style
+      content: black
+
+themeConfig:
+  repo: ''
+  editLinks: false
+  docsDir: ''
+  editLinkText: ''
+  lastUpdated: false
+  nav:
+    - text: Guide
+      link: /guide/
+    - text: Config
+      link: /config/
+    - text: The LEAGUE
+      link: https://jointheleague.org
+  displayAllHeaders: true
+  sidebar:
+    - title: Introduction
+      path: /lessons
+    - title: Lesson 1
+      collapsable: false
+      children:
+        - title: Meet Tina the Turtle
+          path: /lesson1/meet-tina-the-turtle/
+        - title: Shapes and Colors
+          path: /lesson1/shapes-and-colors/
+    - title: Lesson 2
+      collapsable: false
+      children:
+        - title: Flaming Ninja Star
+          path: /lesson2/flaming-ninja-star/
+        - title: Turtle Spirals
+          path: /lesson2/turtle-spiral/
+
+  logo: /images/Flag.png
+
+plugins:
+  - '@vuepress/plugin-back-to-top'
+  - '@vuepress/plugin-medium-zoom'
+

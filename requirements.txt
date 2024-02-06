@@ -1,2 +1,5 @@
-invoke # For the tasks.py tasks
-pyyaml # For the tasks.py tasks
+invoke
+pyyaml
+python-slugify
+jinja2
+python-frontmatter

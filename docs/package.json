@@ -1,0 +1,19 @@
+{
+  "name": "Level0",
+  "version": "0.0.1",
+  "description": "Level0 python lessons",
+  "main": "index.js",
+  "authors": {
+    "name": "Eric Busboom ",
+    "email": "eric.busboom@jointheleague.org"
+  },
+  "repository": "https://github.com/league-python/Level0/Level0",
+  "scripts": {
+    "dev": "vuepress dev src",
+    "build": "vuepress build src"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "vuepress": "^1.5.3"
+  }
+}
