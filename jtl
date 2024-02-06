@@ -63,6 +63,13 @@ def serve():
     with local.cwd(root_dir / 'docs'):
         yarn['dev'] & FG
 
+@main.command(help="Development program")
+def dev():
+
+    lp = LessonPlan( root_dir / 'lessons')
+
+    for lesson in lp.lessons:
+        print(lesson)
 
 if __name__ == '__main__':
     main()
