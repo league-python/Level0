@@ -6,6 +6,7 @@ from invoke import task
 from slugify import slugify
 from tasklib import *
 import os
+import frontmatter
 
 logger = logging.getLogger(__name__)
 
@@ -52,11 +53,60 @@ def write_assignment_text(asgn_dir, ad: dict):
 
     return render('assignment.md',
            frontmatter={'title': ad['title']},
+           title=ad['title'],
            working_directory=asgn_dir,
            content=text)
 
-def write_assignment_dir(ad: dict):
-    pass
+def make_sidebar():
+    """Walk the directory and print out the assignment metadata"""
+
+    def get_title_from_md(file_path):
+        with open(file_path, 'r', encoding='utf-8') as f:
+            post = frontmatter.load(f)
+        return post.get('title', 'No Title')
+
+    config = get_config(tasks_dir)
+    ms = Path(config['module_source'])
+
+    lesson_root = config['lesson_root']
+
+    sidebar = [{"title": "Introduction",  "path": "/lessons" }]
+
+    """
+      title: Lesson 1
+      collapsable: false
+      children:
+        - title: Meet Tina the Turtle
+          path: /lesson1/meet-tina-the-turtle/
+        - title: Shapes and Colors
+          path: /lesson1/shapes-and-colors/
+          """
+
+    for f in lesson_root.glob('*'):
+        if f.is_file():
+            continue
+
+        d = {"title": f.name, "collapsable": False, "children": []}
+        for c in f.glob('*'):
+            if c.is_file():
+                continue
+            title = get_title_from_md(c.joinpath('index.md'))
+            d['children'].append({"title": title, "path": f"/lessons/{f.name}/{c.name}/"})
+
+        sidebar.append(d)
+
+    return sidebar
+
+
+def update_config(sidebar):
+
+    config_file = tasks_dir / 'docs/src/.vuepress/config.yml'
+
+    config = yaml.safe_load(config_file.read_text())
+
+    config['sidebar'] = sidebar
+
+    config_file.write_text(yaml.dump(config))
 
 
 @task
@@ -64,10 +114,10 @@ def dev(ctx, directory='.'):
 
     root_dir = tasks_dir
 
-    config = get_config()
+    config = get_config(tasks_dir)
     ms = Path(config['module_source'])
 
-    lesson_root = root_dir / 'docs/src'
+    lesson_root = config['lesson_root']
 
     for lesson, assignments in config['lessons'].items():
 
@@ -98,6 +148,10 @@ def dev(ctx, directory='.'):
                 print(f"Writing {asgn_path}")
                 text = write_assignment_text(asgn_path, meta)
                 (asgn_path / 'index.md').write_text(text)
+
+    sidebar = make_sidebar()
+    update_config(sidebar)
+
 
 
 

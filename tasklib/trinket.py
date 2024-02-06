@@ -12,7 +12,7 @@ def goal_image(context, file):
 
     path = Path(context['working_directory']) / file
 
-    return f'<img src="path" alt="Your Goal" style="float: right; width: 200px; margin-bottom:20px; "/>)'
+    return f'<img src="./{path.name}" alt="Your Goal" style="float: right; width: 200px; margin-bottom:20px; "/>'
 
 def generate_trinket_iframe_src(file, working_dir='.', embed_type='python', width='300', height='500'):
     """

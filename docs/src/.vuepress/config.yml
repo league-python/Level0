@@ -1,52 +1,64 @@
-title: League Level0 Python
-description: description  # Assuming 'description' is a variable defined elsewhere
-
+description: description
 head:
-  - - meta
-    - name: theme-color
-      content: '#F37121'
-  - - meta
-    - name: apple-mobile-web-app-capable
-      content: yes
-  - - meta
-    - name: apple-mobile-web-app-status-bar-style
-      content: black
-
+- - meta
+  - content: '#F37121'
+    name: theme-color
+- - meta
+  - content: true
+    name: apple-mobile-web-app-capable
+- - meta
+  - content: black
+    name: apple-mobile-web-app-status-bar-style
+plugins:
+- '@vuepress/plugin-back-to-top'
+- '@vuepress/plugin-medium-zoom'
+sidebar:
+- path: /lessons
+  title: Introduction
+- children:
+  - path: /lessons/lesson2/flaming-ninja-star/
+    title: Flaming Ninja Star
+  - path: /lessons/lesson2/turtle-spiral/
+    title: Turtle Spiral
+  collapsable: false
+  title: lesson2
+- children:
+  - path: /lessons/lesson1/meet-tina-the-turtle/
+    title: Meet Tina the Turtle
+  - path: /lessons/lesson1/shapes-and-colors/
+    title: Shapes and Colors
+  collapsable: false
+  title: lesson1
 themeConfig:
-  repo: ''
-  editLinks: false
+  displayAllHeaders: true
   docsDir: ''
   editLinkText: ''
+  editLinks: false
   lastUpdated: false
-  nav:
-    - text: Guide
-      link: /guide/
-    - text: Config
-      link: /config/
-    - text: The LEAGUE
-      link: https://jointheleague.org
-  displayAllHeaders: true
-  sidebar:
-    - title: Introduction
-      path: /lessons
-    - title: Lesson 1
-      collapsable: false
-      children:
-        - title: Meet Tina the Turtle
-          path: /lesson1/meet-tina-the-turtle/
-        - title: Shapes and Colors
-          path: /lesson1/shapes-and-colors/
-    - title: Lesson 2
-      collapsable: false
-      children:
-        - title: Flaming Ninja Star
-          path: /lesson2/flaming-ninja-star/
-        - title: Turtle Spirals
-          path: /lesson2/turtle-spiral/
-
   logo: /images/Flag.png
-
-plugins:
-  - '@vuepress/plugin-back-to-top'
-  - '@vuepress/plugin-medium-zoom'
-
+  nav:
+  - link: /guide/
+    text: Guide
+  - link: /config/
+    text: Config
+  - link: https://jointheleague.org
+    text: The LEAGUE
+  repo: ''
+  sidebar:
+  - path: /lessons
+    title: Introduction
+  - children:
+    - path: /lessons/lesson2/flaming-ninja-star/
+      title: Flaming Ninja Start
+    - path: /lessons/lesson2/turtle-spiral/
+      title: turtle_spiral
+    collapsable: false
+    title: lesson2
+  - children:
+    - path: /lessons/lesson1/meet-tina-the-turtle/
+      title: Meet Tina the Turtle
+    - path: /lessons/lesson1/shapes-and-colors/
+      title: Shapes and Colors
+    collapsable: false
+    title: lesson1
+title: League Level0 Python
