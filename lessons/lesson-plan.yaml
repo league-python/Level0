@@ -1,14 +1,16 @@
 lessons:
   lesson1:
     text: lesson1.md
-    resources: []
+    resources:
+      - Flag.png
     assignments:
     - python-modules/Levels/Level0/Module0/01_drawing/tina_the_turtle
     - python-modules/Levels/Level0/Module0/01_drawing/shapes_and_colors
 
   lesson2:
     text: lesson2.md
-    resources: []
+    resources:
+      - word-logo.png
     assignments:
     - python-modules/Levels/Level0/Module0/02_code_flow/flaming_ninja_star
     - python-modules/Levels/Level0/Module0/02_code_flow/turtle_spiral

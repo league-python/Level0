@@ -1,54 +1,126 @@
+""" Object structure for the lesson plan, the lessons and assignments.
+Iterates through the lesson plan and writes the lessons and assignments to the
+file system.
+"""
 import frontmatter
 
 import yaml
 from pathlib import Path
 from slugify import slugify
 import shutil
+import logging
 
-def make_sidebar(root_dir):
-    """Walk the directory and print out the assignment metadata to make
-    the data for the sidebar"""
+logger = logging.getLogger(__name__)
 
-    def get_title_from_md(file_path):
-        with open(file_path, 'r', encoding='utf-8') as f:
-            post = frontmatter.load(f)
-        return post.get('title', 'No Title')
+def get_assignment(path):
+    """Read an assignment and construct a dict of the important information"""
 
-    config = get_config(root_dir)
-    ms = Path(config['module_source'])
+    path = Path(path)
+    meta_path = path / '.assignment.yaml'
 
-    lesson_root = config['lesson_root']
+    if not meta_path.exists():
+        return {}
 
-    sidebar = [{"title": "Introduction",  "path": "/lessons" }]
+    meta = yaml.safe_load(meta_path.read_text())
 
-    for f in lesson_root.glob('*'):
-        if f.is_file():
-            continue
+    meta['sources'] = []
+    meta['texts'] = {}
+    meta['resources'] = []
 
-        d = {"title": f.name, "collapsable": False, "children": []}
-        for c in f.glob('*'):
-            if c.is_file():
-                continue
-            title = get_title_from_md(c.joinpath('index.md'))
-            d['children'].append({"title": title, "path": f"/lessons/{f.name}/{c.name}/"})
+    for f in path.glob('*.py'):
+        meta['sources'].append(f)
 
-        sidebar.append(d)
+    for f in path.glob('*.md'):
+        meta['texts'][f.stem] = f
 
-    return sidebar
+    for f in list(path.glob('*.png')) + list(path.glob('*.gif')):
+        meta['resources'].append(f)
+
+    return meta
+
+
+
 
 
 class Assignment:
-    def __init__(self, src_dir,lesson_data, assignment_dir):
-        self.ld = lesson_data
-        self.adir = assignment_dir
-        self.src_dir = src_dir
+    def __init__(self, lesson: "Lesson", assignment_dir):
+        self.lesson = lesson
+        self.ass_dir = Path(assignment_dir)
+
+        if not self.ass_dir.exists():
+            raise FileNotFoundError(f'Assignment directory nonexistant: ', assignment_dir)
+
+        self.ass_data = get_assignment(self.ass_dir)
+
+    @property
+    def title(self):
+        try:
+            return self.ass_data['title']
+        except KeyError:
+            print('ERROR', self.ass_data)
+            return ''
+
+    @property
+    def dir_name(self):
+        return slugify(self.title)
+
+    def write_dir(self, root: Path):
+        from tasklib.render import render
+
+        lesson_dir = root / self.lesson.dir_name
+        ass_dir = lesson_dir / self.dir_name
+
+        if not ass_dir.exists():
+            ass_dir.mkdir(parents=True)
+
+        ad = self.ass_data
+
+        if not 'trinket' in ad['texts']:
+            return
+
+        # Copy the source files
+        for source in ad['sources']:
+            shutil.copy(source, ass_dir)
+
+        text = ad['texts']['trinket'].read_text()
+
+        md =  render('assignment.md',
+                      frontmatter={'title': ad['title']},
+                      title=ad['title'],
+                      working_directory=ass_dir,
+                      content=text)
+
+        (ass_dir / 'index.md' ).write_text(md)
+
+        # Copy outher resources
+        for f in list(ad['resources']) + list(ad['sources']):
+            f = Path(f)
+            shutil.copy(f, ass_dir / f.name)
+
+        return ass_dir
+
+    @property
+    def sidebar_entry(self):
+        """
+        path: /lessons/lesson2/flaming-ninja-star/
+              title: Flaming Ninja Star
+        """
+
+        return {
+            'path': f'/lessons/{self.lesson.dir_name}/{self.dir_name}',
+            'title': self.title
+        }
+
+    def __str__(self):
+        return self.title
 
 
 class Lesson:
 
-    def __init__(self, src_dir, lesson_data):
+    def __init__(self, lesson_plan: "LessonPlan", lesson_data):
+        self.lesson_plan = lesson_plan
         self.ld = lesson_data
-        self.src_dir = src_dir
+        self.src_dir = self.lesson_plan.less_plan_dir
 
     @property
 
@@ -80,21 +152,87 @@ class Lesson:
 
         shutil.copy(self.src_dir /self.ld['text'] , lesson_dir / 'index.md')
 
+        for res in self.ld['resources']:
+            logger.debug(f'    Copying {res} to {lesson_dir}')
+            shutil.copy(self.src_dir / 'assets'  / res, lesson_dir / res)
+
+        for ass in self.assignments:
+            logger.debug(f'    Writing {ass}')
+            ass.write_dir(root)
+
         return lesson_dir
+
+    @property
+    def sidebar_entry(self):
+        """
+        - collapsable: false
+          title: lesson2
+          children:
+            - path: /lessons/lesson2/flaming-ninja-star/
+              title: Flaming Ninja Star
+            - path: /lessons/lesson2/turtle-spiral/
+              title: Turtle Spiral
+
+        """
+
+        return {
+            'collapsable': False,
+            'title': self.title,
+            'children': [ c.sidebar_entry() for c in self.assignments]
+        }
+
+
+    @property
+    def assignments(self):
+        for a in self.ld['assignments']:
+            yield Assignment(self, a)
 
     def __str__(self):
         return f"Lesson: {self.title} dir={self.dir_name}"
 
 class LessonPlan:
 
-    def __init__(self,  lesson_dir):
-        self.lesson_dir = Path(lesson_dir)
-        self.lesson_plan_file = self.lesson_dir / 'lesson-plan.yaml'
+    def __init__(self,  less_plan_dir, web_src_dir, less_subdir='lessons'):
+        """ Create a new lesson plan
 
+        Args:
+            less_plan_dir: Root dir for the lesson plan and other files.
+            web_src_dir: The source dir for vuepress files, usually 'docs/src'
+            less_subdir: subdir in web_src_dir for generated lesson files.
+
+        """
+
+        self.less_plan_dir = Path(less_plan_dir)
+        self.lesson_plan_file = self.less_plan_dir / 'lesson-plan.yaml'
         self.lesson_plan = yaml.safe_load(self.lesson_plan_file.read_text())
+        self.web_src_dir = web_src_dir
+        self.less_subdir = less_subdir
+
 
     @property
     def lessons(self):
         for lesson_key, lesson in self.lesson_plan['lessons'].items():
-            yield Lesson(self.lesson_dir, lesson)
+            yield Lesson(self, lesson)
+
+    def write_dirs(self, root_dir: Path = None):
+        """Write the lesson plan to the root directory
+
+        Args:
+            root_dir (Path): The root directory to write the lesson to
+        """
+
+        if root_dir is None:
+            root_dir = self.web_src_dir / self.less_subdir
+
+        logger.info(f'Writing lesson plan to {root_dir}')
+
+        for lesson in self.lessons:
+            logger.debug(f'Writing {lesson}')
+            lesson.write_dir(root_dir)
+
+    def make_sidebar(self, root_dir):
+
+        return   ([{"title": "Introduction", "path": "/"+self.less_subdir}] +
+                  [l.sidebar_entry for l in self.lessons])
+
 

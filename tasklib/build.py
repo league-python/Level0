@@ -1,7 +1,8 @@
 
 from .config import  update_config
-from .lesson import make_sidebar
-from .assignments import get_assignment, write_assignment_text
+
+
+
 from .render import render
 from .trinket import *
 import shutil

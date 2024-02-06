@@ -66,10 +66,10 @@ def serve():
 @main.command(help="Development program")
 def dev():
 
-    lp = LessonPlan( root_dir / 'lessons')
+    lp = LessonPlan( root_dir / 'lessons', root_dir / 'docs/src', 'lessons')
+    lp.write_dirs()
 
-    for lesson in lp.lessons:
-        print(lesson)
+
 
 if __name__ == '__main__':
     main()
