@@ -32,18 +32,17 @@ themeConfig:
   - path: /lessons
     title: Introduction
   - children:
-      - path: /lessons/lesson1/meet-tina-the-turtle/
-        title: Meet Tina the Turtle
-      - path: /lessons/lesson1/shapes-and-colors/
-        title: Shapes and Colors
-    collapsable: false
-    title: lesson1
-  - children:
     - path: /lessons/lesson2/flaming-ninja-star/
       title: Flaming Ninja Star
     - path: /lessons/lesson2/turtle-spiral/
       title: Turtle Spiral
     collapsable: false
     title: lesson2
-
+  - children:
+    - path: /lessons/lesson1/meet-tina-the-turtle/
+      title: Meet Tina the Turtle
+    - path: /lessons/lesson1/shapes-and-colors/
+      title: Shapes and Colors
+    collapsable: false
+    title: lesson1
 title: League Level0 Python

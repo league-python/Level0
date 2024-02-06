@@ -1,0 +1,18 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+invoke = "*"
+click = "*"
+pyyaml = "*"
+python-slugify = "*"
+jinja2 = "*"
+python-frontmatter = "*"
+plumbum = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.11"

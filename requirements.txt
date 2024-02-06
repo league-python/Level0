@@ -1,5 +1,7 @@
 invoke
+click
 pyyaml
 python-slugify
 jinja2
 python-frontmatter
+plumbum
