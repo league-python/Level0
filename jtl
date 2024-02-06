@@ -69,6 +69,8 @@ def dev():
     lp = LessonPlan( root_dir / 'lessons', root_dir / 'docs/src', 'lessons')
     lp.write_dirs()
 
+    print(yaml.dump(lp.make_sidebar()))
+
 
 
 if __name__ == '__main__':

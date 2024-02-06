@@ -10,7 +10,6 @@ Setup the development environment with the following commands:
 pipenv install --dev
 pipenv shell
 ```
-
 Run the development server
     
 ```bash

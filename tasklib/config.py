@@ -9,7 +9,7 @@ import yaml
 
 def update_config(root_dir, sidebar):
 
-    config_file = root_dir / 'docs/src/.vuepress/config.yml'
+    config_file = root_dir / '.vuepress/config.yml'
 
     config = yaml.safe_load(config_file.read_text())
 
