@@ -1,1 +1,2 @@
 invoke # For the tasks.py tasks
+pyyaml # For the tasks.py tasks

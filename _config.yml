@@ -12,3 +12,15 @@ remote_theme: pages-themes/hacker@v0.2.0
 plugins:
   - jekyll-feed
   - jekyll-remote-theme # add this line to the plugins list if you already have one
+  - jekyll-toc
+
+toc:
+   min_level: 1
+   max_level: 3
+   list_class: toc
+   list_class: toc__list
+   sublist_class: toc__sublist
+
+# For the tasks.py tasks
+tasks:
+  module_source: null # This is the source of the module files, usually set via ENV Var

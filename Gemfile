@@ -37,3 +37,5 @@ gem "http_parser.rb", "~> 0.6.0", :platforms => [:jruby]
 #gem "jekyll-theme-clean-blog"
 #gem "jekyll-theme-hacker"
 gem 'webrick', '~> 1.7'
+
+gem 'jekyll-toc'
