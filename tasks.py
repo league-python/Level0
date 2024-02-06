@@ -72,16 +72,6 @@ def make_sidebar():
 
     sidebar = [{"title": "Introduction",  "path": "/lessons" }]
 
-    """
-      title: Lesson 1
-      collapsable: false
-      children:
-        - title: Meet Tina the Turtle
-          path: /lesson1/meet-tina-the-turtle/
-        - title: Shapes and Colors
-          path: /lesson1/shapes-and-colors/
-          """
-
     for f in lesson_root.glob('*'):
         if f.is_file():
             continue
@@ -104,7 +94,7 @@ def update_config(sidebar):
 
     config = yaml.safe_load(config_file.read_text())
 
-    config['sidebar'] = sidebar
+    config['themeConfig']['sidebar'] = sidebar
 
     config_file.write_text(yaml.dump(config))
 
@@ -150,6 +140,7 @@ def dev(ctx, directory='.'):
                 (asgn_path / 'index.md').write_text(text)
 
     sidebar = make_sidebar()
+
     update_config(sidebar)
 
 
