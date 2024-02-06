@@ -19,13 +19,14 @@ def main():
 
 @main.command(help="Build the website from the lesson plan")
 def build():
-    build_source(root_dir)
+
+    lp = LessonPlan( root_dir / 'lessons', root_dir / 'docs/src', 'lessons')
+    lp.build()
 
 
 @main.command(help="Print configuration (tbd)")
 def config():
     print("reporting")
-
 
 @main.command(help="Deploy the website to Github Pages")
 def deploy():
@@ -35,6 +36,9 @@ def deploy():
     from plumbum.commands.processes import ProcessExecutionError
 
     # Workaround errors on build due to openssl issues in Node 17
+    # Maybe need to set this extern to the call:
+    # NODE_OPTIONS=--openssl-legacy-provider ./jtl deploy
+
     os.environ['NODE_OPTIONS'] = '--openssl-legacy-provider'
 
     origin_url = git('remote', 'get-url', 'origin').strip()
@@ -62,16 +66,6 @@ def serve():
 
     with local.cwd(root_dir / 'docs'):
         yarn['dev'] & FG
-
-@main.command(help="Development program")
-def dev():
-
-    lp = LessonPlan( root_dir / 'lessons', root_dir / 'docs/src', 'lessons')
-    lp.write_dirs()
-
-    print(yaml.dump(lp.make_sidebar()))
-
-
 
 if __name__ == '__main__':
     main()

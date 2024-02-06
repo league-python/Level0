@@ -99,10 +99,6 @@ class Assignment:
 
     @property
     def sidebar_entry(self):
-        """
-        path: /lessons/lesson2/flaming-ninja-star/
-              title: Flaming Ninja Star
-        """
 
         return {
             'path': f'/lessons/{self.lesson.dir_name}/{self.dir_name}/',
@@ -211,52 +207,69 @@ class LessonPlan:
         for lesson_key, lesson in self.lesson_plan['lessons'].items():
             yield Lesson(self, lesson)
 
-    def write_dirs(self, root_dir: Path = None):
+    def update_config(self, root_dir):
+        """Generate the config file for viuepress"""
+
+        lp = self.lesson_plan
+
+        # Read the config from the lesson plan
+        config = yaml.safe_load((self.less_plan_dir / 'config.yml').read_text())
+
+        config['title'] = lp['title']
+        config['description'] = lp['description']
+
+        # config output file for vuepress
+        config_file =  self.web_src_dir / '.vuepress/config.yml'
+
+        config['themeConfig']['sidebar'] = self.make_sidebar(root_dir)
+
+        config_file.write_text(yaml.dump(config))
+
+    def write_dir(self, root_dir: Path = None):
         """Write the lesson plan to the root directory
 
         Args:
             root_dir (Path): The root directory to write the lesson to
         """
-        from .config import update_config
+
+        for page in self.lesson_plan['pages']:
+            page_file = self.less_plan_dir / page
+            dest_file = self.web_src_dir / page
+
+            shutil.copy(page_file, dest_file)
+
+
+        assets_dir = self.web_src_dir / '.vuepress/public/assets'
+        if not assets_dir.exists():
+            assets_dir.mkdir()
+
+        for resource in self.lesson_plan['resources']:
+            res_file = self.less_plan_dir / 'assets' / resource
+            dest_file = assets_dir / resource
+
+            shutil.copy(res_file, dest_file)
+
+    def build(self, root_dir: Path = None):
+        """Write the lesson plan to the root directory
+
+        Args:
+            root_dir (Path): The root directory to write the lesson to
+        """
 
         if root_dir is None:
             root_dir = self.web_src_dir / self.less_subdir
 
         logger.info(f'Writing lesson plan to {root_dir}')
 
+        self.write_dir(root_dir)
+
         for lesson in self.lessons:
             logger.debug(f'Writing {lesson}')
             lesson.write_dir(root_dir)
 
-        side_bar = self.make_sidebar(root_dir)
-
-        update_config(self.web_src_dir, side_bar)
+        self.update_config(root_dir)
 
     def make_sidebar(self, root_dir=None):
 
-        if root_dir is None:
-            root_dir = self.web_src_dir / '.vuepress'
 
-        return ([{"title": "Introduction", "path": "/" + self.less_subdir}] +
-                [l.sidebar_entry for l in self.lessons])
-
-"""
-  sidebar:
-  - path: /lessons
-    title: Introduction
-  - children:
-    - path: /lessons/lesson2/flaming-ninja-star/
-      title: Flaming Ninja Star
-    - path: /lessons/lesson2/turtle-spiral/
-      title: Turtle Spiral
-    collapsable: false
-    title: lesson2
-  - children:
-    - path: /lessons/lesson1/meet-tina-the-turtle/
-      title: Meet Tina the Turtle
-    - path: /lessons/lesson1/shapes-and-colors/
-      title: Shapes and Colors
-    collapsable: false
-    title: lesson1
-    
-    """
+        return (self.lesson_plan['sidebar']+[l.sidebar_entry for l in self.lessons])

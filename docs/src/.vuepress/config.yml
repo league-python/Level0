@@ -1,5 +1,5 @@
 base: /Level0/
-description: description
+description: League Level0 Python
 head:
 - - meta
   - content: '#F37121'
@@ -19,15 +19,15 @@ themeConfig:
   editLinkText: ''
   editLinks: false
   lastUpdated: false
-  logo: /images/Flag.png
+  logo: /assets/Flag.png
   nav:
-  - link: /lessons/
-    text: Home
+  - link: /about/
+    text: About
   - link: https://jointheleague.org
     text: The LEAGUE
   repo: ''
   sidebar:
-  - path: /lessons
+  - path: /intro
     title: Introduction
   - children:
     - path: /lessons/introduction-to-tina-the-turtle/meet-tina-the-turtle/
