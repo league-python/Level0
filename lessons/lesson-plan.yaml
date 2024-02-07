@@ -18,7 +18,6 @@ lessons:
     assignments:
     - python-modules/Levels/Level0/Module0/01_drawing/tina_the_turtle
     - python-modules/Levels/Level0/Module0/01_drawing/shapes_and_colors
-
   lesson2:
     text: lesson2.md
     resources:
